@@ -1,233 +1,166 @@
-<!DOCTYPE html>
-<html lang="zh-HK">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名古屋深度之旅 - 行程表</title>
-    <style>
-        :root {
-            --primary: #4a90e2;
-            --bg: #f5f7fa;
-            --card: #ffffff;
-            --text: #333;
-            --accent-food: #ff9f43;
-            --accent-spot: #2ecc71;
-            --accent-transport: #9b59b6;
-        }
+body {
+        font-family: -apple-system, "PingFang HK", "Helvetica Neue", sans-serif;
+        background-color: var(--bg);
+        color: var(--text-main);
+        margin: 0;
+        padding-bottom: 50px;
+        line-height: 1.5;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
+    header {
+        background: white;
+        padding: 20px 15px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+    }
 
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 20px 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+    .header-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+    .header-date { font-size: 0.9rem; color: var(--text-sub); }
 
-        /* 天數切換導航 - 手機橫向滑動 */
-        .day-nav {
-            display: flex;
-            overflow-x: auto;
-            background: white;
-            padding: 10px 5px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid #ddd;
-            -webkit-overflow-scrolling: touch;
-        }
+    /* 天數導航列 */
+    .day-nav {
+        display: flex;
+        overflow-x: auto;
+        background: white;
+        padding: 10px 5px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        -webkit-overflow-scrolling: touch;
+    }
 
-        .day-btn {
-            flex: 0 0 70px;
-            padding: 8px 0;
-            margin: 0 5px;
-            text-align: center;
-            border-radius: 8px;
-            background: #eee;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
+    .day-btn {
+        flex: 0 0 65px;
+        padding: 10px 0;
+        margin: 0 5px;
+        text-align: center;
+        border-radius: 12px;
+        background: #f1f2f6;
+        font-size: 13px;
+        border: none;
+        transition: 0.3s;
+    }
 
-        .day-btn.active {
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-        }
+    .day-btn.active {
+        background: var(--primary);
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(93, 169, 233, 0.3);
+    }
 
-        .container {
-            padding: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+    .container { padding: 15px; max-width: 500px; margin: 0 auto; }
 
-        /* 行程內容區塊 */
-        .day-content {
-            display: none;
-        }
+    /* 行程內容 */
+    .day-content { display: none; }
+    .day-content.active { display: block; animation: slideUp 0.3s ease-out; }
 
-        .day-content.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .timeline-item {
+        display: flex;
+        margin-bottom: 12px;
+        background: var(--card);
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        border-left: 6px solid #ccc;
+    }
 
-        /* 垂直時間軸樣式 */
-        .timeline-item {
-            display: flex;
-            margin-bottom: 15px;
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border-left: 5px solid var(--primary);
-        }
+    .time-box {
+        padding: 15px 10px;
+        min-width: 60px;
+        font-weight: bold;
+        font-size: 14px;
+        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid #f5f5f5;
+    }
 
-        .time {
-            padding: 15px;
-            background: #fcfcfc;
-            min-width: 65px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #eee;
-        }
+    .activity-box { padding: 15px; flex-grow: 1; }
+    .activity-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+    .activity-desc { font-size: 13px; color: var(--text-sub); }
 
-        .activity {
-            padding: 15px;
-            flex-grow: 1;
-        }
+    /* 類別樣式 (對應 image.png) */
+    .cat-flight { border-left-color: var(--flight); }
+    .cat-hotel { border-left-color: var(--hotel); }
+    .cat-spot { border-left-color: var(--spot); }
+    .cat-food { border-left-color: var(--food); }
+    .cat-shrine { border-left-color: var(--shrine); }
+    .cat-museum { border-left-color: var(--museum); }
+    .cat-nature { border-left-color: var(--nature); }
+    .cat-transport { border-left-color: var(--transport); }
 
-        .activity h3 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-        }
-
-        .activity p {
-            margin: 0;
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* 不同類型的顏色區分 */
-        .type-food { border-left-color: var(--accent-food); }
-        .type-spot { border-left-color: var(--accent-spot); }
-        .type-transport { border-left-color: var(--accent-transport); }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #999;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h2 style="margin:0">名古屋深度之旅</h2>
-    <span style="font-size: 14px; opacity: 0.9;">2024年12月14日 - 12月21日</span>
-</header>
-
-<div class="day-nav">
-    <div class="day-btn active" onclick="showDay(1)">D1<br>12/14</div>
-    <div class="day-btn" onclick="showDay(2)">D2<br>12/15</div>
-    <div class="day-btn" onclick="showDay(3)">D3<br>12/16</div>
-    <div class="day-btn" onclick="showDay(4)">D4<br>12/17</div>
-    <div class="day-btn" onclick="showDay(5)">D5<br>12/18</div>
-    <div class="day-btn" onclick="showDay(6)">D6<br>12/19</div>
-    <div class="day-btn" onclick="showDay(7)">D7<br>12/20</div>
-    <div class="day-btn" onclick="showDay(8)">D8<br>12/21</div>
+    .empty-state { text-align: center; padding: 40px; color: #ccc; }
+</style>
+<!-- Day 2 -->
+<div id="d2" class="day-content">
+    <div class="timeline-item cat-food"><div class="time-box">08:00</div><div class="activity-box"><div class="activity-title">名古屋早餐</div></div></div>
+    <div class="timeline-item cat-spot"><div class="time-box">09:00</div><div class="activity-box"><div class="activity-title">名古屋城</div></div></div>
+    <div class="timeline-item cat-shrine"><div class="time-box">12:00</div><div class="activity-box"><div class="activity-title">東照宮</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">13:00</div><div class="activity-box"><div class="activity-title">台灣拉麵</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">14:00</div><div class="activity-box"><div class="activity<-title">市立博物館</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">18:00</div><div class="activity-box"><div class="activity-title">鰻魚飯三吃</div></div></div>
 </div>
 
-<div class="container">
-    <div id="day1" class="day-content active">
-        <div class="timeline-item type-transport">
-            <div class="time">09:00</div>
-            <div class="activity">
-                <h3>搭乘飛機</h3>
-                <p>抵達中部國際機場</p>
-            </div>
-        </div>
-        <div class="timeline-item">
-            <div class="time">13:00</div>
-            <div class="activity">
-                <h3>抵達市區</h3>
-                <p>辦理飯店入住手續</p>
-            </div>
-        </div>
-        <div class="timeline-item type-food">
-            <div class="time">18:00</div>
-            <div class="activity">
-                <h3>味噌豬排</h3>
-                <p>在地必吃晚餐</p>
-            </div>
-        </div>
-    </div>
+<!-- Day 3 -->
+<div id="d3" class="day-content">
+    <div class="timeline-item cat-spot"><div class="time-box">09:00</div><div class="activity-box"><div class="activity-title">前往昭和村</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">10:00</div><div class="activity-box"><div class="activity-title">昭和村體驗</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">13:00</div><div class="activity-box"><div class="activity-title">農家料理</div></div></div>
+    <div class="timeline-item cat-nature"><div class="time-box">15:00</div><div class="activity-box"><div class="activity-title">美濃加茂散步</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">19:00</div><div class="activity-box"><div class="activity-title">手羽先雞翅</div></div></div>
+</div>
 
-    <div id="day2" class="day-content">
-        <div class="timeline-item type-food">
-            <div class="time">08:00</div>
-            <div class="activity">
-                <h3>名古屋早餐</h3>
-                <p>經典小倉紅豆吐司</p>
-            </div>
-        </div>
-        <div class="timeline-item type-spot">
-            <div class="time">10:00</div>
-            <div class="activity">
-                <h3>名古屋城</h3>
-                <p>參觀金鯱與本丸御殿</p>
-            </div>
-        </div>
-        <div class="timeline-item type-spot">
-            <div class="time">14:00</div>
-            <div class="activity">
-                <h3>熱田神宮</h3>
-                <p>三神器之一草薙劍存放地</p>
-            </div>
-        </div>
-    </div>
+<!-- Day 4 -->
+<div id="d4" class="day-content">
+    <div class="timeline-item cat-spot"><div class="time-box">09:00</div><div class="activity-box"><div class="activity-title">前往豐田市</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">10:00</div><div class="activity-box"><div class="activity-title">產業技術紀念館</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box"></13:00</div><div class="activity-box"><div class="activity-title">豐田午餐</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">14:00</div><div class="activity-box"><div class="activity-title">汽車博物館</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">16:00</div><div class="activity-box"><div class="activity-title">豐田美術館</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">19:00</div><div class="activity-box"><div class="activity-title">味噌烏龍麵</div></div></div>
+</div>
 
-    </div>
+<!-- Day 5 -->
+<div id="d5" class="day-content">
+    <div class="timeline-item cat-transport"><div class="time-box">07:00</div><div class="activity-box"><div class="activity-title">新幹線赴京都</div></div></div>
+    <div class="timeline-item cat-shrine"><div class="time-box">09:00</div><div class="activity-box"><div class="activity-title">伏見稻荷</div></div></div>
+    <div class="timeline-item cat-shrine"><div class="time-box">11:00</div><div class="activity-box"><div class="activity-title">清水寺</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">14:00</div><div class="activity-box"><div class="activity-title">懷石料理</div></div></div>
+    div class="timeline-item cat-nature"><div class="time-box">15:00</div><div class="activity-box"><div class="activity-title">花見小路</div></div></div>
+    <div class="timeline-item cat-transport"><div class="time-box">18:00</div><div class="activity-box"><div class="activity-title">新幹線回名古屋</div></div></div>
+</div>
 
-<footer>
-    點擊上方日期切換行程表
-</footer>
+<!-- Day 6 -->
+<div id="d6" class="day-content">
+    <div class="timeline-item cat-food"><div class="time-box">08:00</div><div class="activity-box"><div class="activity-title">小倉吐司早餐</div></div></div>
+    <div class="timeline-item cat-shrine"><div class="time-box">10:00</div><div class="activity-box"><div class="activity-title">熱田神宮</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">12:00</div><div class="activity-box"><div class="activity-title">寬得拉麵</div></div></div>
+    <div class="timeline-item cat-spot"><div class="time-box">14:00</div><div class="activity-box"><div class="activity-title">大須商店街</div></div></div>
+    <div class="timeline-item cat-spot"><div class="time-box">17:00</div><div class="activity-box"><div class="activity-title">名古屋站百貨</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">19:00</div><div class="activity-box"><div class="activity-title">居酒屋晚餐</div></div></div>
+</div>
 
-<script>
-    function showDay(dayNumber) {
-        // 隱藏所有內容
-        document.querySelectorAll('.day-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        // 取消按鈕高亮
-        document.querySelectorAll('.day-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+<!-- Day 7 -->
+<div id="d7" class="day-content">
+    <div class="timeline-item cat-transport"><div class="time-box">07:00</div><div class="activity-<box"><div class="activity-title">特急赴高山</div></div></div>
+    <div class="timeline-item cat-spot"><div class="time-box">10:00</div><div class="activity-box"><div class="activity-title">高山老街</div></div></div>
+    <div class="timeline-item cat-museum"><div class="time-box">11:00</div><div class="activity-box"><div class="activity-title">高山陣屋</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">13:00</div><div class="activity-box"><div class="activity-title">飛驒牛料理</div></div></div>
+    <div class="timeline-item cat-spot"><div class="time-box">14:00</div><div class="activity-box"><div class="activity-title">飛驒之里</div></div></div>
+    <div class="timeline-item cat-transport"><div class="time-box">17:00</div><div class="activity-box"><div class="activity-title">返回名古屋</div></div></div>
+    <div class="timeline-item cat-food"><div class="time-box">20:00</div>div class="activity-box"><div class="activity-title">告別晚餐</div></div></div>
+</div>
 
-        // 顯示選中內容與按鈕
-        document.getElementById('day' + dayNumber).classList.add('active');
-        event.currentTarget.classList.add('active');
-
-        // 自動捲動導航條
-        event.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-</script>
-
-</body>
-</html>
+<!-- Day 8 -->
+<div id="d8" class="day-content">
+    <div class="timeline-item cat-food"><div class="time-box">08:00</div>div class="activity-box"><div class="activity-title">最後早餐</div></div></div>
+    <div class="timeline-item cat-shopping"><div class="time-box">09:00</div><div class="activity-box"><div class="activity-title">採購伴手禮</div></div></div>
+    <div class="timeline-item cat-transport"><div class="time-box">11:00</div><div class="activity-box"><div class="activity-title">前往機場</div></div></div>
+    <div class="timeline-item cat-flight"><div class="time-box">14:00</div><div class="activity-box"><div class="activity-title">搭機返程</div></div></div>
+</div>
