@@ -1,68 +1,267 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的旅行行程表</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-slate-50 py-10">
-    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-        <!-- Header -->
-        <div class="bg-blue-600 p-8 text-white">
-            <h1 class="text-3xl font-bold">歐洲家族之旅</h1>
-            <p class="opacity-80 mt-2 text-sm uppercase tracking-widest">April 2026</p>
-        </div>
 
-        <!-- Timeline Content -->
-        <div class="p-6">
-            <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-blue-500 before:via-blue-200 before:to-transparent">
-                
-                <!-- Day 1 -->
-                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-500 text-white shadow shrink-0 z-10">
-                        <i class="fas fa-plane text-sm"></i>
-                    </div>
-                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
-                        <div class="text-xs font-bold text-blue-500">4/10 (Thu)</div>
-                        <div class="text-gray-800 font-bold">抵達倫敦 (Watford)</div>
-                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Atria Shopping Centre</div>
-                    </div>
-                </div>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.2rem 1rem;font-family:var(--font-sans)}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.trip-info{display:flex;align-items:center;gap:10px}
+.trip-badge{background:#E6F1FB;color:#0C447C;border-radius:20px;font-size:12px;font-weight:500;padding:4px 12px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.fbtn{font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid #B5D4F4;background:var(--color-background-primary);color:#185FA5;cursor:pointer;transition:all .15s}
+.fbtn.on{background:#185FA5;color:#fff;border-color:#185FA5}
+.grid-header{display:grid;grid-template-columns:64px repeat(8,1fr);gap:2px;margin-bottom:2px}
+.gh-cell{font-size:11px;font-weight:500;color:#0C447C;background:#E6F1FB;border-radius:6px 6px 0 0;padding:6px 4px;text-align:center;line-height:1.3}
+.gh-day{font-size:13px}
+.gh-date{font-size:10px;color:#185FA5}
+.time-grid{display:grid;grid-template-columns:64px repeat(8,1fr);gap:2px}
+.time-label{font-size:11px;color:var(--color-text-secondary);padding:3px 6px 3px 0;text-align:right;height:36px;display:flex;align-items:center;justify-content:flex-end;border-right:1.5px solid #B5D4F4}
+.slot{height:36px;background:var(--color-background-secondary);border-radius:4px;position:relative;overflow:hidden}
+.slot.empty{background:transparent}
+.act{position:absolute;inset:1px;border-radius:4px;padding:2px 5px;cursor:pointer;display:flex;align-items:center;gap:3px;overflow:hidden;transition:opacity .15s}
+.act:hover{opacity:.85}
+.act.hidden{display:none}
+.act-icon{font-size:11px;flex-shrink:0}
+.act-label{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.act.flight{background:#B5D4F4;color:#0C447C}
+.act.hotel{background:#9FE1CB;color:#085041}
+.act.sight{background:#85B7EB;color:#0C447C}
+.act.food{background:#FAC775;color:#633806}
+.act.temple{background:#F4C0D1;color:#72243E}
+.act.nature{background:#C0DD97;color:#27500A}
+.act.shop{background:#CECBF6;color:#3C3489}
+.act.museum{background:#F5C4B3;color:#712B13}
+.act.transport{background:#D3D1C7;color:#444441}
+.detail-panel{margin-top:1rem;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;min-height:80px;transition:all .2s}
+.dp-empty{color:var(--color-text-secondary);font-size:13px;text-align:center;padding:1.5rem 0}
+.dp-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.dp-icon-wrap{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.dp-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.dp-meta{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.dp-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.6;border-top:0.5px solid var(--color-border-tertiary);padding-top:10px}
+.dp-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dp-tag{font-size:11px;padding:2px 8px;border-radius:10px}
+.dp-tag.blue{background:#E6F1FB;color:#0C447C}
+.dp-tag.green{background:#EAF3DE;color:#27500A}
+.dp-tag.amber{background:#FAEEDA;color:#633806}
+.dp-tag.pink{background:#FBEAF0;color:#72243E}
+.dp-tag.gray{background:#F1EFE8;color:#444441}
+.legend-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.8rem}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-secondary)}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.sum-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.7rem;text-align:center}
+.sum-num{font-size:22px;font-weight:500;color:#185FA5}
+.sum-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+</style>
 
-                <!-- Day 2 -->
-                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-indigo-500 text-white shadow shrink-0 z-10">
-                        <i class="fas fa-camera text-sm"></i>
-                    </div>
-                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
-                        <div class="text-xs font-bold text-indigo-500">4/11 (Fri)</div>
-                        <div class="text-gray-800 font-bold">倫敦經典景點</div>
-                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> 西敏寺, 大笨鐘, 倫敦眼</div>
-                    </div>
-                </div>
+<div class="wrap">
+<h2 class="sr-only">名古屋旅遊互動行程表 2024年12月14日至21日</h2>
 
-                <!-- Day 3 -->
-                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-emerald-500 text-white shadow shrink-0 z-10">
-                        <i class="fas fa-train text-sm"></i>
-                    </div>
-                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
-                        <div class="text-xs font-bold text-emerald-500">4/13 (Sun)</div>
-                        <div class="text-gray-800 font-bold">出發前往巴黎</div>
-                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Eurostar @ St Pancras</div>
-                    </div>
-                </div>
+<div class="top-bar">
+  <div class="trip-info">
+    <i class="ti ti-plane" style="font-size:20px;color:#185FA5" aria-hidden="true"></i>
+    <span style="font-size:16px;font-weight:500;color:var(--color-text-primary)">名古屋深度之旅</span>
+    <span class="trip-badge">12/14 — 12/21</span>
+  </div>
+  <span style="font-size:12px;color:var(--color-text-secondary)">點選活動查看詳情</span>
+</div>
 
-            </div>
-        </div>
-        
-        <div class="p-6 bg-gray-50 text-center">
-            <button class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
-                查看詳細清單
-            </button>
-        </div>
+<div class="summary-row">
+  <div class="sum-card"><div class="sum-num">8</div><div class="sum-lbl">旅遊天數</div></div>
+  <div class="sum-card"><div class="sum-num" id="act-count">32</div><div class="sum-lbl">活動安排</div></div>
+  <div class="sum-card"><div class="sum-num">3</div><div class="sum-lbl">周邊城市</div></div>
+  <div class="sum-card"><div class="sum-num">7</div><div class="sum-lbl">必吃美食</div></div>
+</div>
+
+<div class="legend-row">
+  <div class="leg"><div class="leg-dot" style="background:#B5D4F4"></div>航班</div>
+  <div class="leg"><div class="leg-dot" style="background:#9FE1CB"></div>住宿</div>
+  <div class="leg"><div class="leg-dot" style="background:#85B7EB"></div>景點</div>
+  <div class="leg"><div class="leg-dot" style="background:#FAC775"></div>美食</div>
+  <div class="leg"><div class="leg-dot" style="background:#F4C0D1"></div>神社</div>
+  <div class="leg"><div class="leg-dot" style="background:#C0DD97"></div>自然</div>
+  <div class="leg"><div class="leg-dot" style="background:#CECBF6"></div>購物</div>
+  <div class="leg"><div class="leg-dot" style="background:#F5C4B3"></div>博物館</div>
+  <div class="leg"><div class="leg-dot" style="background:#D3D1C7"></div>交通</div>
+</div>
+
+<div class="filter-row" id="filters">
+  <button class="fbtn on" data-cat="all">全部</button>
+  <button class="fbtn" data-cat="flight"><i class="ti ti-plane-departure" style="font-size:11px"></i> 航班</button>
+  <button class="fbtn" data-cat="food"><i class="ti ti-tools-kitchen-2" style="font-size:11px"></i> 美食</button>
+  <button class="fbtn" data-cat="sight"><i class="ti ti-camera" style="font-size:11px"></i> 景點</button>
+  <button class="fbtn" data-cat="temple"><i class="ti ti-building-arch" style="font-size:11px"></i> 神社</button>
+  <button class="fbtn" data-cat="museum"><i class="ti ti-building" style="font-size:11px"></i> 博物館</button>
+  <button class="fbtn" data-cat="shop"><i class="ti ti-shopping-bag" style="font-size:11px"></i> 購物</button>
+  <button class="fbtn" data-cat="transport"><i class="ti ti-train" style="font-size:11px"></i> 交通</button>
+  <button class="fbtn" data-cat="nature"><i class="ti ti-trees" style="font-size:11px"></i> 自然</button>
+</div>
+
+<div style="overflow-x:auto">
+<div style="min-width:620px">
+
+<div class="grid-header" id="grid-header"></div>
+<div class="time-grid" id="time-grid"></div>
+
+</div>
+</div>
+
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-empty"><i class="ti ti-hand-click" style="font-size:18px;display:block;margin-bottom:6px" aria-hidden="true"></i>點選上方任一活動格，即可查看詳細說明</div>
+</div>
+
+</div>
+
+<script>
+const days=[
+  {day:1,label:"Day 1",date:"12/14",sub:"抵達"},
+  {day:2,label:"Day 2",date:"12/15",sub:"名古屋城"},
+  {day:3,label:"Day 3",date:"12/16",sub:"昭和村"},
+  {day:4,label:"Day 4",date:"12/17",sub:"豐田市"},
+  {day:5,label:"Day 5",date:"12/18",sub:"京都"},
+  {day:6,label:"Day 6",date:"12/19",sub:"熱田"},
+  {day:7,label:"Day 7",date:"12/20",sub:"高山"},
+  {day:8,label:"Day 8",date:"12/21",sub:"返程"}
+];
+
+const times=["07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"];
+
+const acts=[
+  {d:1,t:9,cat:"flight",icon:"ti-plane-departure",label:"搭乘國際班機",title:"搭乘國際班機前往名古屋",meta:"09:00 · 全天",desc:"飛往日本中部國際機場（セントレア）。建議提早辦理登機手續，準備日圓現金及旅行保險文件。",tags:[{l:"國際線",c:"blue"},{l:"中部國際機場",c:"gray"}]},
+  {d:1,t:13,cat:"transport",icon:"ti-train",label:"名鐵入市區",title:"搭乘名鐵前往名古屋市區",meta:"13:30 · 約28分鐘",desc:"從中部國際機場搭名鐵至名古屋站，票價約¥890。抵達後建議購買Manaca交通卡。",tags:[{l:"名鐵",c:"blue"},{l:"¥890",c:"amber"}]},
+  {d:1,t:15,cat:"hotel",icon:"ti-bed",label:"辦理入住",title:"住宿：名古屋大都會酒店",meta:"15:00 · 入住",desc:"距名古屋站步行5分鐘，交通便利。放下行李休息後準備探索市區。",tags:[{l:"名古屋站附近",c:"gray"},{l:"推薦住宿",c:"green"}]},
+  {d:1,t:18,cat:"food",icon:"ti-tools-kitchen-2",label:"味噌豬排",title:"初嚐名古屋名物：味噌豬排",meta:"18:30 · 晚餐",desc:"前往「矢場とん」品嚐正宗味噌豬排（味噌かつ），濃郁赤味噌醬汁搭配酥脆炸豬排，名古屋必吃！",tags:[{l:"矢場とん",c:"amber"},{l:"名古屋名物",c:"pink"}]},
+  {d:1,t:20,cat:"sight",icon:"ti-building-store",label:"大須夜遊",title:"大須商店街夜間散步",meta:"20:00 · 夜遊",desc:"漫步充滿活力的大須商店街，各式小吃、二手衣物、電子產品與傳統工藝品應有盡有。",tags:[{l:"步行",c:"blue"},{l:"約1.5小時",c:"gray"}]},
+
+  {d:2,t:8,cat:"food",icon:"ti-coffee",label:"名古屋早餐",title:"名古屋式早餐「モーニング」體驗",meta:"08:00 · 早餐",desc:"在喫茶店點一杯咖啡，即附贈厚片吐司、水煮蛋及沙拉，超值又道地！",tags:[{l:"喫茶店文化",c:"amber"},{l:"名古屋特色",c:"blue"}]},
+  {d:2,t:9,cat:"sight",icon:"ti-chess-rook",label:"名古屋城",title:"名古屋城（名古屋城）",meta:"09:30 · 約2.5小時",desc:"日本三大名城之一！登天守閣俯瞰全景，欣賞金鯱裝飾，本丸御殿精緻障壁畫值得細品。",tags:[{l:"門票¥500",c:"amber"},{l:"三大名城",c:"blue"},{l:"約2.5小時",c:"gray"}]},
+  {d:2,t:12,cat:"temple",icon:"ti-building-arch",label:"東照宮",title:"名古屋東照宮",meta:"12:00 · 參拜",desc:"供奉德川家康的江戶時代神社，精美社殿建築為重要文化財，冬日靜謐氛圍別有韻味。",tags:[{l:"免費參觀",c:"green"},{l:"重要文化財",c:"gray"}]},
+  {d:2,t:13,cat:"food",icon:"ti-tools-kitchen-2",label:"台灣拉麵",title:"名古屋台灣拉麵午餐",meta:"13:00 · 午餐",desc:"品嚐源自名古屋的台灣拉麵——濃郁雞高湯搭配辛辣肉醬，雖以台灣為名卻是道地名古屋美食。",tags:[{l:"名古屋名物",c:"amber"},{l:"辛辣口味",c:"pink"}]},
+  {d:2,t:14,cat:"museum",icon:"ti-building",label:"市立博物館",title:"名古屋市博物館",meta:"14:30 · 約2小時",desc:"探索名古屋的歷史與文化演變，館內收藏豐富考古文物及江戶時代資料。",tags:[{l:"文化",c:"blue"},{l:"約2小時",c:"gray"}]},
+  {d:2,t:18,cat:"food",icon:"ti-tools-kitchen-2",label:"鰻魚飯三吃",title:"鰻魚飯三吃（ひつまぶし）",meta:"18:30 · 晚餐",desc:"前往「備長」品嚐名古屋代表美食之一，三種方式享用烤鰻魚飯：直接吃、加蔥花芥末吃、最後泡茶喝。",tags:[{l:"必吃名物",c:"amber"},{l:"鰻魚料理",c:"pink"}]},
+
+  {d:3,t:9,cat:"transport",icon:"ti-bus",label:"前往昭和村",title:"前往日本昭和村（岐阜縣）",meta:"09:00 · 出發",desc:"搭乘高速巴士前往岐阜縣美濃加茂市的「日本昭和村」，車程約1小時。",tags:[{l:"岐阜縣",c:"blue"},{l:"約1小時",c:"gray"}]},
+  {d:3,t:10,cat:"nature",icon:"ti-trees",label:"昭和村體驗",title:"日本昭和村（日本昭和村）",meta:"10:30 · 約3小時",desc:"穿越時光回到昭和年代！體驗傳統農村生活，學習木工陶藝等傳統技藝，冬季可採摘蔬果。",tags:[{l:"體驗活動",c:"green"},{l:"入場¥800",c:"amber"},{l:"約3小時",c:"gray"}]},
+  {d:3,t:13,cat:"food",icon:"ti-tools-kitchen-2",label:"農家料理",title:"昭和村內農家料理午餐",meta:"13:30 · 午餐",desc:"以當地食材製作的農家定食，感受日本農村飲食文化，樸實溫暖的家鄉滋味。",tags:[{l:"農家料理",c:"amber"},{l:"當地食材",c:"green"}]},
+  {d:3,t:15,cat:"sight",icon:"ti-camera",label:"美濃加茂散步",title:"美濃加茂市太田宿散步",meta:"15:00 · 散步",desc:"漫步美濃加茂市區，探訪太田宿本陣等中山道宿場遺跡，感受江戶時代驛站風情。",tags:[{l:"歷史街道",c:"blue"},{l:"步行",c:"gray"}]},
+  {d:3,t:19,cat:"food",icon:"ti-tools-kitchen-2",label:"手羽先雞翅",title:"名古屋手羽先（雞翅）料理",meta:"19:00 · 晚餐",desc:"前往「山ちゃん」品嚐招牌手羽先——秘製醬料醃製油炸，外酥內嫩，搭配名古屋生啤最對味！",tags:[{l:"手羽先",c:"amber"},{l:"名古屋名物",c:"pink"}]},
+
+  {d:4,t:9,cat:"transport",icon:"ti-train",label:"前往豐田市",title:"名古屋出發前往豐田市",meta:"09:00 · 出發",desc:"搭乘名鐵前往豐田市，車程約45分鐘，豐田市是全球知名的汽車之都。",tags:[{l:"名鐵",c:"blue"},{l:"約45分鐘",c:"gray"}]},
+  {d:4,t:10,cat:"museum",icon:"ti-building",label:"產業技術紀念館",title:"豐田產業技術紀念館",meta:"10:00 · 約3小時",desc:"從紡織機到汽車，見證豐田集團百年工業史。現場有技師示範操作，生動有趣，強力推薦！",tags:[{l:"門票¥500",c:"amber"},{l:"約3小時",c:"gray"},{l:"強力推薦",c:"green"}]},
+  {d:4,t:13,cat:"food",icon:"ti-tools-kitchen-2",label:"豐田午餐",title:"豐田市區午餐",meta:"13:00 · 午餐",desc:"在豐田市中心享用午餐，推薦豬骨拉麵或定食套餐。",tags:[{l:"日式定食",c:"amber"}]},
+  {d:4,t:14,cat:"museum",icon:"ti-car",label:"汽車博物館",title:"豐田汽車博物館",meta:"14:00 · 約2小時",desc:"館內收藏超過120輛各年代精品名車，從百年古董車到現代電動車，汽車迷必訪聖地！",tags:[{l:"門票¥1,000",c:"amber"},{l:"汽車迷必訪",c:"pink"},{l:"約2小時",c:"gray"}]},
+  {d:4,t:16,cat:"sight",icon:"ti-photo",label:"豐田美術館",title:"豐田市美術館",meta:"16:30 · 約1小時",desc:"以現代藝術為主，館舍建築出自谷口吉生之手，本身即是藝術品，俯瞰市區景色絕佳。",tags:[{l:"現代藝術",c:"blue"},{l:"約1小時",c:"gray"}]},
+  {d:4,t:19,cat:"food",icon:"ti-tools-kitchen-2",label:"味噌烏龍麵",title:"名古屋味噌烏龍麵",meta:"19:00 · 晚餐",desc:"前往「山本屋本店」品嚐赤味噌烏龍麵——砂鍋文火慢燉，麵條Q彈湯底濃郁，冬日最暖心！",tags:[{l:"砂鍋料理",c:"amber"},{l:"冬日必吃",c:"pink"}]},
+
+  {d:5,t:7,cat:"transport",icon:"ti-train",label:"新幹線赴京都",title:"搭乘新幹線前往京都",meta:"07:30 · 出發",desc:"從名古屋站搭東海道新幹線のぞみ號前往京都，僅約35分鐘，輕鬆實現京都一日遊。",tags:[{l:"新幹線",c:"blue"},{l:"約35分鐘",c:"gray"},{l:"¥3,240",c:"amber"}]},
+  {d:5,t:9,cat:"temple",icon:"ti-building-arch",label:"伏見稻荷",title:"伏見稻荷大社",meta:"09:00 · 約2小時",desc:"數千座朱紅色鳥居蜿蜒山路，冬日清晨人潮少，感受神聖靜謐氛圍，世界知名打卡景點。",tags:[{l:"免費參觀",c:"green"},{l:"世界知名",c:"blue"},{l:"約2小時",c:"gray"}]},
+  {d:5,t:11,cat:"temple",icon:"ti-camera",label:"清水寺",title:"清水寺與二年坂三年坂",meta:"11:30 · 約2小時",desc:"登清水寺舞台俯瞰京都全景，沿石板街道挑選傳統工藝紀念品，冬日銀杏落葉飄散。",tags:[{l:"門票¥500",c:"amber"},{l:"世界遺產",c:"blue"},{l:"約2小時",c:"gray"}]},
+  {d:5,t:14,cat:"food",icon:"ti-tools-kitchen-2",label:"懷石料理",title:"京都懷石料理午餐",meta:"14:00 · 午餐",desc:"在祇園附近享用正統京都懷石料理或湯豆腐定食，感受京都精緻細膩的飲食美學。",tags:[{l:"京都料理",c:"amber"},{l:"湯豆腐",c:"pink"}]},
+  {d:5,t:15,cat:"sight",icon:"ti-walk",label:"花見小路",title:"祇園花見小路漫步",meta:"15:30 · 散步",desc:"漫步藝伎文化街區，保存完好的傳統町家建築讓人彷彿穿越時空，傍晚或許邂逅藝伎身影。",tags:[{l:"免費",c:"green"},{l:"藝伎文化",c:"pink"}]},
+  {d:5,t:18,cat:"transport",icon:"ti-train",label:"新幹線返名古屋",title:"搭新幹線返回名古屋",meta:"18:30 · 返程",desc:"搭乘新幹線從京都返回名古屋，欣賞夜幕下的關西平原，返抵後居酒屋輕鬆晚餐。",tags:[{l:"新幹線",c:"blue"},{l:"約35分鐘",c:"gray"}]},
+
+  {d:6,t:8,cat:"food",icon:"ti-coffee",label:"小倉吐司早餐",title:"小倉吐司名古屋早餐",meta:"08:30 · 早餐",desc:"品嚐名古屋獨特的小倉吐司——甜蜜紅豆餡塗抹厚片吐司，是名古屋早餐文化代表！",tags:[{l:"名古屋早餐",c:"amber"},{l:"喫茶店",c:"blue"}]},
+  {d:6,t:10,cat:"temple",icon:"ti-building-arch",label:"熱田神宮",title:"熱田神宮",meta:"10:00 · 約1.5小時",desc:"日本三大神宮之一，供奉草薙劍，歷史超1900年。廣達13萬坪境內林木蒼鬱，莊嚴靜謐。",tags:[{l:"免費參觀",c:"green"},{l:"三大神宮",c:"blue"},{l:"約1.5小時",c:"gray"}]},
+  {d:6,t:12,cat:"food",icon:"ti-tools-kitchen-2",label:"宮きしめん",title:"宮きしめん（神宮扁麵）午餐",meta:"12:00 · 午餐",desc:"在熱田神宮境內品嚐著名的きしめん扁烏龍麵，柴魚高湯熬製，麵條寬扁滑順，名古屋必嚐。",tags:[{l:"神宮必吃",c:"amber"},{l:"きしめん",c:"pink"}]},
+  {d:6,t:14,cat:"shop",icon:"ti-shopping-bag",label:"大須商店街",title:"大須商店街深度探索",meta:"14:00 · 約3小時",desc:"超過1,200間店舖，涵蓋二手衣物、電子零件、動漫文化、傳統藥妝、美食小吃，名古屋最熱鬧商業街。",tags:[{l:"購物天堂",c:"blue"},{l:"美食小吃",c:"amber"},{l:"約3小時",c:"gray"}]},
+  {d:6,t:17,cat:"shop",icon:"ti-building-store",label:"名古屋站百貨",title:"名古屋站前百貨購物",meta:"17:30 · 購物",desc:"JR Gate Tower、名古屋高島屋購買藥妝、食品伴手禮，推薦名古屋限定零食及特產。",tags:[{l:"百貨購物",c:"blue"},{l:"伴手禮",c:"amber"}]},
+  {d:6,t:19,cat:"food",icon:"ti-tools-kitchen-2",label:"居酒屋晚宴",title:"名古屋居酒屋體驗",meta:"19:30 · 晚餐",desc:"在名古屋風格居酒屋享用各式小菜串燒搭配地酒，與當地人一起感受日本下班後的生活方式。",tags:[{l:"居酒屋",c:"amber"},{l:"串燒",c:"pink"}]},
+
+  {d:7,t:7,cat:"transport",icon:"ti-train",label:"特急赴高山",title:"特急「ひだ號」前往飛驒高山",meta:"07:00 · 出發",desc:"搭乘JR特急「ひだ號」穿越飛驒山地，沿途山川景色壯麗，冬雪初覆尤為迷人，車程約2.5小時。",tags:[{l:"JR特急",c:"blue"},{l:"約2.5小時",c:"gray"},{l:"¥5,000",c:"amber"}]},
+  {d:7,t:10,cat:"sight",icon:"ti-camera",label:"高山舊市街",title:"高山舊市街（三町筋）漫步",meta:"10:00 · 約2小時",desc:"保存完好的江戶時代商人街道，深色格子窗古民家錯落有致，冬日積雪為古街添上浪漫濾鏡。",tags:[{l:"免費",c:"green"},{l:"重要傳統建築群",c:"blue"},{l:"約2小時",c:"gray"}]},
+  {d:7,t:11,cat:"museum",icon:"ti-building",label:"高山陣屋",title:"高山陣屋",meta:"11:30 · 約1小時",desc:"日本現存唯一保存完整的幕府代官所，見證江戶時代幕府對飛驒地區的統治歷史。",tags:[{l:"門票¥440",c:"amber"},{l:"約1小時",c:"gray"}]},
+  {d:7,t:13,cat:"food",icon:"ti-tools-kitchen-2",label:"飛驒牛料理",title:"飛驒牛料理午餐",meta:"13:00 · 午餐",desc:"品嚐高山名物飛驒牛！可選牛排、握壽司或燒肉定食，油花豐富、入口即化，必吃體驗！",tags:[{l:"飛驒牛",c:"amber"},{l:"當地名物",c:"green"},{l:"必吃推薦",c:"pink"}]},
+  {d:7,t:14,cat:"nature",icon:"ti-home",label:"飛驒之里",title:"飛驒之里（民俗村）",meta:"14:30 · 約1.5小時",desc:"露天博物館蒐集保存飛驒傳統合掌造建築，冬季積雪茅草屋頂猶如童話世界，最上鏡拍照景點！",tags:[{l:"門票¥700",c:"amber"},{l:"合掌造",c:"green"},{l:"約1.5小時",c:"gray"}]},
+  {d:7,t:17,cat:"transport",icon:"ti-train",label:"返回名古屋",title:"搭JR特急返回名古屋",meta:"17:00 · 返程",desc:"搭乘JR特急「ひだ號」返回名古屋，欣賞落日餘暉映照飛驒山脈的壯麗景色。",tags:[{l:"JR特急",c:"blue"},{l:"約2.5小時",c:"gray"}]},
+  {d:7,t:20,cat:"food",icon:"ti-tools-kitchen-2",label:"告別晚宴",title:"告別晚宴：名古屋豪華料理",meta:"20:00 · 晚餐",desc:"在名古屋最後一個晚上，集味噌豬排、ひつまぶし、手羽先等名物於一身，完美句點！",tags:[{l:"告別晚宴",c:"amber"},{l:"名物全覽",c:"pink"}]},
+
+  {d:8,t:8,cat:"food",icon:"ti-coffee",label:"最後早餐",title:"最後一次名古屋式早餐",meta:"08:00 · 早餐",desc:"在喫茶店享用最後一次「モーニング」早餐，將名古屋的悠閒早晨氣息刻入記憶。",tags:[{l:"喫茶店文化",c:"amber"}]},
+  {d:8,t:9,cat:"shop",icon:"ti-shopping-bag",label:"採購伴手禮",title:"退房後採購伴手禮",meta:"09:30 · 採購",desc:"前往名古屋站內名產館採購：えびせんべい蝦餅、ういろう外郎糕、名古屋城金鯱造型點心等必買好物。",tags:[{l:"伴手禮",c:"blue"},{l:"名古屋限定",c:"amber"}]},
+  {d:8,t:11,cat:"transport",icon:"ti-train",label:"前往機場",title:"前往中部國際機場",meta:"11:30 · 出發",desc:"搭名鐵從名古屋站出發約28分鐘抵達中部國際機場，建議提前3小時到達辦理國際線手續。",tags:[{l:"名鐵",c:"blue"},{l:"約28分鐘",c:"gray"}]},
+  {d:8,t:15,cat:"flight",icon:"ti-plane-arrival",label:"搭機返程",title:"搭乘返程班機回家",meta:"15:00 · 登機",desc:"依依不捨離開名古屋，帶著滿滿的旅遊回憶與伴手禮踏上歸途。名古屋，再見！",tags:[{l:"返程國際線",c:"blue"},{l:"旅程圓滿結束",c:"green"}]}
+];
+
+const iconMap={flight:"ti-plane-departure",hotel:"ti-bed",sight:"ti-camera",food:"ti-tools-kitchen-2",temple:"ti-building-arch",nature:"ti-trees",shop:"ti-shopping-bag",museum:"ti-building",transport:"ti-train"};
+const bgMap={flight:"#B5D4F4",hotel:"#9FE1CB",sight:"#85B7EB",food:"#FAC775",temple:"#F4C0D1",nature:"#C0DD97",shop:"#CECBF6",museum:"#F5C4B3",transport:"#D3D1C7"};
+const fgMap={flight:"#0C447C",hotel:"#085041",sight:"#0C447C",food:"#633806",temple:"#72243E",nature:"#27500A",shop:"#3C3489",museum:"#712B13",transport:"#444441"};
+const dpBgMap={flight:"#E6F1FB",hotel:"#E1F5EE",sight:"#E6F1FB",food:"#FAEEDA",temple:"#FBEAF0",nature:"#EAF3DE",shop:"#EEEDFE",museum:"#FAECE7",transport:"#F1EFE8"};
+
+let currentFilter="all";
+
+function buildGrid(){
+  const gh=document.getElementById("grid-header");
+  const tg=document.getElementById("time-grid");
+  gh.innerHTML="";
+  tg.innerHTML="";
+
+  const timeH=document.createElement("div");
+  timeH.style.cssText="background:transparent";
+  gh.appendChild(timeH);
+  days.forEach(d=>{
+    const c=document.createElement("div");
+    c.className="gh-cell";
+    c.innerHTML=`<div class="gh-day">${d.label}</div><div class="gh-date">${d.date}</div><div style="font-size:9px;color:#378ADD">${d.sub}</div>`;
+    gh.appendChild(c);
+  });
+
+  times.forEach(time=>{
+    const tl=document.createElement("div");
+    tl.className="time-label";
+    tl.textContent=time;
+    tg.appendChild(tl);
+
+    const th=parseInt(time);
+    days.forEach(d=>{
+      const slot=document.createElement("div");
+      slot.className="slot";
+      const a=acts.find(x=>x.d===d.day && x.t===th);
+      if(a){
+        const act=document.createElement("div");
+        act.className=`act ${a.cat}`;
+        act.dataset.id=`${a.d}-${a.t}`;
+        act.style.cssText=`background:${bgMap[a.cat]};color:${fgMap[a.cat]}`;
+        if(currentFilter!=="all" && a.cat!==currentFilter) act.classList.add("hidden");
+        act.innerHTML=`<i class="ti ${a.icon} act-icon" aria-hidden="true"></i><span class="act-label">${a.label}</span>`;
+        act.addEventListener("click",()=>showDetail(a));
+        slot.appendChild(act);
+      } else {
+        slot.classList.add("empty");
+      }
+      tg.appendChild(slot);
+    });
+  });
+}
+
+function showDetail(a){
+  const dp=document.getElementById("detail-panel");
+  const tagHtml=a.tags.map(t=>`<span class="dp-tag ${t.c}">${t.l}</span>`).join("");
+  dp.innerHTML=`
+    <div class="dp-header">
+      <div class="dp-icon-wrap" style="background:${dpBgMap[a.cat]}">
+        <i class="ti ${a.icon}" style="font-size:20px;color:${fgMap[a.cat]}" aria-hidden="true"></i>
+      </div>
+      <div>
+        <div class="dp-title">${a.title}</div>
+        <div class="dp-meta">${a.meta}</div>
+      </div>
     </div>
-</body>
-</html>
+    <div class="dp-desc">${a.desc}</div>
+    <div class="dp-tags">${tagHtml}</div>
+  `;
+}
+
+document.getElementById("filters").addEventListener("click",e=>{
+  const btn=e.target.closest(".fbtn");
+  if(!btn) return;
+  currentFilter=btn.dataset.cat;
+  document.querySelectorAll(".fbtn").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  document.querySelectorAll(".act").forEach(a=>{
+    if(currentFilter==="all"||a.classList.contains(currentFilter)) a.classList.remove("hidden");
+    else a.classList.add("hidden");
+  });
+  const visible=document.querySelectorAll(".act:not(.hidden)").length;
+  document.getElementById("act-count").textContent=visible;
+});
+
+buildGrid();
+</script>
