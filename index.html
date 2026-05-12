@@ -1,36 +1,68 @@
-import React from 'react';
-import { Plane, Utensils, MapPin, Camera, Bus } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的旅行行程表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 py-10">
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="bg-blue-600 p-8 text-white">
+            <h1 class="text-3xl font-bold">歐洲家族之旅</h1>
+            <p class="opacity-80 mt-2 text-sm uppercase tracking-widest">April 2026</p>
+        </div>
 
-const TravelItinerary = () => {
-  const itinerary = [
-    { date: "4/10 (Thu)", activity: "抵達 (Arrival)", location: "Atria - 午餐與購物", type: "transport", icon: <Plane size={18}/> },
-    { date: "4/11 (Fri)", activity: "倫敦經典之旅", location: "西敏寺、大笨鐘、倫敦眼、泰晤士河遊船", type: "sightseeing", icon: <Camera size={18}/> },
-    { date: "4/13 (Sun)", activity: "前往巴黎", location: "巴黎 (Paris)", type: "transport", icon: <Bus size={18}/> },
-    { date: "4/14 (Mon)", activity: "巴黎地標", location: "艾菲爾鐵塔與羅浮宮", type: "sightseeing", icon: <MapPin size={18}/> },
-    { date: "4/20 (Sun)", activity: "倫敦博物館與空中花園", location: "大英博物館、Sky Garden (午餐)", type: "food", icon: <Utensils size={18}/> }
-  ];
+        <!-- Timeline Content -->
+        <div class="p-6">
+            <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-blue-500 before:via-blue-200 before:to-transparent">
+                
+                <!-- Day 1 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-500 text-white shadow shrink-0 z-10">
+                        <i class="fas fa-plane text-sm"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-blue-500">4/10 (Thu)</div>
+                        <div class="text-gray-800 font-bold">抵達倫敦 (Watford)</div>
+                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Atria Shopping Centre</div>
+                    </div>
+                </div>
 
-  return (
-    <div className="max-w-md mx-auto bg-gray-50 p-6 rounded-xl shadow-lg font-sans">
-      <h1 className="text-2xl font-bold text-blue-800 mb-6">歐洲家族之旅行程表</h1>
-      <div className="relative border-l-2 border-blue-200 ml-3">
-        {itinerary.map((item, index) => (
-          <div key={index} className="mb-8 ml-6">
-            <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-blue-500 rounded-full text-white">
-              {item.icon}
-            </span>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-              <div className="text-sm font-semibold text-blue-600">{item.date}</div>
-              <h3 className="text-lg font-bold text-gray-800 mt-1">{item.activity}</h3>
-              <p className="text-gray-600 text-sm mt-1 flex items-center">
-                <MapPin size={14} className="mr-1"/> {item.location}
-              </p>
+                <!-- Day 2 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-indigo-500 text-white shadow shrink-0 z-10">
+                        <i class="fas fa-camera text-sm"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-indigo-500">4/11 (Fri)</div>
+                        <div class="text-gray-800 font-bold">倫敦經典景點</div>
+                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> 西敏寺, 大笨鐘, 倫敦眼</div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-emerald-500 text-white shadow shrink-0 z-10">
+                        <i class="fas fa-train text-sm"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] ml-6 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                        <div class="text-xs font-bold text-emerald-500">4/13 (Sun)</div>
+                        <div class="text-gray-800 font-bold">出發前往巴黎</div>
+                        <div class="text-gray-500 text-xs mt-1"><i class="fas fa-map-marker-alt mr-1"></i> Eurostar @ St Pancras</div>
+                    </div>
+                </div>
+
             </div>
-          </div>
-        ))}
-      </div>
+        </div>
+        
+        <div class="p-6 bg-gray-50 text-center">
+            <button class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
+                查看詳細清單
+            </button>
+        </div>
     </div>
-  );
-};
-
-export default TravelItinerary;
+</body>
+</html>
