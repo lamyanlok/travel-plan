@@ -3,178 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名古屋深度之旅 - 行程管理</title>
+    <title>名古屋深度之旅 2026</title>
     <style>
-        /* 參考範例風格：使用現代系統字體與極簡色調 */
+        /* 深度模擬 Claude Artifact 視覺風格 */
         :root {
-            --bg-color: #f9fafb;
+            --bg-color: #f9f9f8;        /* Claude 招牌淺灰底色 */
             --header-bg: #ffffff;
-            --primary: #2563eb;
-            --text-main: #111827;
+            --primary-accent: #d97706;  /* 溫暖的橘黃色調 */
+            --text-main: #1a1a1a;
             --text-sub: #6b7280;
             --card-bg: #ffffff;
             --border-color: #e5e7eb;
-            
-            /* 柔和的活動類別配色 */
-            --cat-flight: #dbeafe;
-            --cat-food: #ffedd5;
-            --cat-spot: #dcfce7;
-            --cat-shrine: #fce7f3;
-            --cat-museum: #f3e8ff;
-            --cat-nature: #ccfbf1;
-            --cat-transport: #f3f4f6;
-            --cat-shopping: #fef9c3;
+            --nav-active-bg: #f3f4f6;
+
+            /* 莫蘭迪色系標籤 */
+            --cat-flight: #eff6ff;
+            --cat-food: #fff7ed;
+            --cat-spot: #f0fdf4;
+            --cat-shrine: #fdf2f8;
+            --cat-museum: #faf5ff;
+            --cat-nature: #f0fdfa;
+            --cat-transport: #f8fafc;
+            --cat-shopping: #fefce8;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            line-height: 1.6;
+            padding: 0;
             -webkit-font-smoothing: antialiased;
         }
 
         header {
             background-color: var(--header-bg);
-            padding: 24px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            max-width: 600px;
+            padding: 32px 20px 20px 20px;
+            max-width: 650px;
             margin: 0 auto;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .header-title {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.025em;
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
             margin: 0;
+            letter-spacing: -0.02em;
         }
 
         .header-date {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-sub);
-            margin-top: 4px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* 導航欄位優化 */
+        /* 導航列：極簡風 */
         .day-nav {
             display: flex;
             overflow-x: auto;
             background: var(--header-bg);
-            padding: 12px 8px;
+            padding: 12px 10px;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 1px solid var(--border-color);
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
 
-        .day-nav::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .day-nav::-webkit-scrollbar { display: none; }
 
         .day-btn {
             flex: 0 0 auto;
-            padding: 8px 16px;
+            padding: 10px 20px;
             margin: 0 4px;
-            text-align: center;
-            border-radius: 20px;
+            border-radius: 8px;
             background: transparent;
             font-size: 14px;
-            font-weight: 500;
-            border: 1px solid transparent;
+            font-weight: 600;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             color: var(--text-sub);
+            transition: all 0.2s;
         }
 
         .day-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            background: var(--nav-active-bg);
+            color: var(--primary-accent);
         }
 
         .container {
-            padding: 20px 16px;
-            max-width: 600px;
+            padding: 24px 16px;
+            max-width: 650px;
             margin: 0 auto;
         }
 
-        /* 行程內容動畫 */
+        /* 內容顯示 */
         .day-content { display: none; }
         .day-content.active {
             display: block;
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        /* 卡片設計提升 */
+        /* 卡片設計：無邊框、微陰影 */
         .timeline-item {
             display: flex;
             margin-bottom: 16px;
             background: var(--card-bg);
             border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
             border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: transform 0.2s;
+            transition: transform 0.1s;
         }
 
         .time-box {
-            padding: 16px 12px;
-            min-width: 60px;
-            font-weight: 700;
+            padding: 20px 16px;
+            min-width: 50px;
+            font-family: "JetBrains Mono", monospace; /* 模擬程式碼字體感 */
             font-size: 13px;
-            color: var(--text-main);
-            background: #fafafa;
+            font-weight: 600;
+            color: #374151;
+            border-right: 1px solid #f3f4f6;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-right: 1px solid var(--border-color);
         }
 
         .activity-box {
-            padding: 16px;
+            padding: 18px 20px;
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
         .activity-title {
             font-weight: 600;
             font-size: 16px;
-            margin-bottom: 2px;
+            color: #111827;
         }
 
-        /* 標籤樣式 */
         .category-tag {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-top: 6px;
-            width: fit-content;
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            margin-top: 8px;
         }
 
-        /* 套用類別配色 */
-        .cat-flight .category-tag { background: var(--cat-flight); color: #1d4ed8; }
-        .cat-food .category-tag { background: var(--cat-food); color: #c2410c; }
-        .cat-spot .category-tag { background: var(--cat-spot); color: #15803d; }
-        .cat-shrine .category-tag { background: var(--cat-shrine); color: #be185d; }
-        .cat-museum .category-tag { background: var(--cat-museum); color: #7e22ce; }
-        .cat-nature .category-tag { background: var(--cat-nature); color: #0f766e; }
-        .cat-transport .category-tag { background: var(--cat-transport); color: #374151; }
-        .cat-shopping .category-tag { background: var(--cat-shopping); color: #a16207; }
+        /* 配色套用 */
+        .cat-flight .category-tag { background: var(--cat-flight); color: #2563eb; }
+        .cat-food .category-tag { background: var(--cat-food); color: #ea580c; }
+        .cat-spot .category-tag { background: var(--cat-spot); color: #16a34a; }
+        .cat-shrine .category-tag { background: var(--cat-shrine); color: #db2777; }
+        .cat-museum .category-tag { background: var(--cat-museum); color: #9333ea; }
+        .cat-nature .category-tag { background: var(--cat-nature); color: #0d9488; }
+        .cat-transport .category-tag { background: var(--cat-transport); color: #4b5563; }
+        .cat-shopping .category-tag { background: var(--cat-shopping); color: #ca8a04; }
 
         footer {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
             font-size: 13px;
             color: #9ca3af;
         }
@@ -183,11 +179,13 @@
 <body>
 
 <header>
-    <h1 class="header-title">名古屋深度之旅</h1>
-    <div class="header-date">2024.12.14 — 2024.12.21</div>
+    <h1 class="header-title">名古屋深度之旅 2026</h1>
+    <div class="header-date">
+        <span>📅 2026.12.14 — 12.21</span>
+    </div>
 </header>
 
-<nav class="day-nav" id="dayNav">
+<nav class="day-nav">
     <button class="day-btn active" onclick="showDay(1, this)">Day 1</button>
     <button class="day-btn" onclick="showDay(2, this)">Day 2</button>
     <button class="day-btn" onclick="showDay(3, this)">Day 3</button>
@@ -278,20 +276,17 @@
 </div>
 
 <footer>
-    互動旅行行程表 &copy; 2024
+    Itinerary Planner &copy; 2026
 </footer>
 
 <script>
     function showDay(day, btn) {
-        // 更新按鈕
         document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // 更新內容
         document.querySelectorAll('.day-content').forEach(c => c.classList.remove('active'));
         document.getElementById('day' + day).classList.add('active');
 
-        // 滑動導航到中央
         btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
 </script>
